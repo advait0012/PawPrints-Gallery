@@ -1,30 +1,52 @@
 // https://dog.ceo/api/breed/eskimo/images/random
 // https://dog.ceo/api/breeds/list/all
-import Options from "./components/Option"
+
+import Options from "./components/Option";
 
 const BASE_URL = `https://dog.ceo/api/`;
 
-const imgEl = document.querySelector("img");
+const imageEl = document.querySelector("img");
 const breedListEl = document.querySelector("#data-breed-list");
 
-function getDogsList() {
-  return fetch(`${BASE_URL}breeds/list/all`)
-    .then((res) => res.json())
-    .then((data) => data.message)
-    .catch((err) => console.log("error occ", err));
+async function getDogsList() {
+  try {
+    const res = await fetch(`${BASE_URL}breeds/list/all`);
+    const data = await res.json();
+    return data.message;
+  } catch (err) {
+    return console.error("error occured", err);
+  }
 }
 getDogsList();
 
-function getDogsImage(breed) {}
+async function getDogsImage(breed) {
+  try {
+    const res = await fetch(`${BASE_URL}breed/${breed}/images/random`);
+    const data = await res.json();
+    return data.message;
+  } catch (error) {
+    return console.error(error);
+  }
+}
 
-function renderSelect() {
-  getDogsList().then((breedList) => {
-    for (let breed in breedList) {
-      breedListEl.appendChild(Options(breed))
-    }
+async function renderSelect() {
+  const dogsList = await getDogsList();
+  Object.keys(dogsList).forEach((dogName) => {
+    breedListEl.appendChild(Options(dogName));
   });
 }
+
+async function renderImage(breed) {
+  const dogsImage = await getDogsImage(breed);
+  imageEl.src = dogsImage;
+}
+
+renderImage("poodle");
+
 renderSelect();
 
-function renderImage() {}
-
+breedListEl.addEventListener("change",async (e)=>{
+  const currentValue = e.target.value
+  renderImage(currentValue)
+  
+})
