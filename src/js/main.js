@@ -2,10 +2,11 @@
 // https://dog.ceo/api/breeds/list/all
 
 import Options from "./components/Option";
+import SingleCarousel from "./components/SingleCarousel";
 
 const BASE_URL = `https://dog.ceo/api/`;
 
-const imageEl = document.querySelector("img");
+const carouselContainerEl = document.querySelector(".carousel-inner");
 const breedListEl = document.querySelector("#data-breed-list");
 
 async function getDogsList() {
@@ -24,14 +25,13 @@ async function getDogsList() {
 
   return breeds;
 }
-
 getDogsList();
 
-async function getDogsImage(breed) {
+async function getDogsImages(breed) {
   try {
-    const res = await fetch(`${BASE_URL}breed/${breed}/images/random`);
+    const res = await fetch(`${BASE_URL}breed/${breed}/images`);
     const data = await res.json();
-    return data.message;
+    return data.message.slice(0, 10);
   } catch (error) {
     return console.error(error);
   }
@@ -46,16 +46,20 @@ async function renderSelect() {
   breedListEl.appendChild(fragment);
 }
 
-async function renderImage(breed) {
-  imageEl.src = "lg.gif";
-  const dogsImage = await getDogsImage(breed);
-  imageEl.src = dogsImage;
-  imageEl.alt = breed;
+async function renderImageCarousel(breed) {
+  carouselContainerEl.innerHTML = "";
+  const data = await getDogsImages(breed);
+  const fragment = document.createDocumentFragment();
+  data.forEach((link) => {
+    fragment.appendChild(SingleCarousel(link,idx === 0));
+  });
+  carouselContainerEl.appendChild(fragment);
 }
+renderImageCarousel("poodle");
 
 breedListEl.addEventListener("change", async (e) => {
   const currentValue = e.target.value;
-  renderImage(currentValue);
+  renderImageCarousel(currentValue);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
