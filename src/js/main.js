@@ -50,8 +50,8 @@ async function renderImageCarousel(breed) {
   carouselContainerEl.innerHTML = "";
   const data = await getDogsImages(breed);
   const fragment = document.createDocumentFragment();
-  data.forEach((link) => {
-    fragment.appendChild(SingleCarousel(link,idx === 0));
+  data.forEach((link,index) => {
+    fragment.appendChild(SingleCarousel(link,index === 0));
   });
   carouselContainerEl.appendChild(fragment);
 }
